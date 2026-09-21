@@ -1,7 +1,7 @@
-const CACHE_NAME = 'santher-5minutos-v3';
+const CACHE_NAME = 'santher-5minutos-v6';
 const APP_SHELL = [
   './', './index.html', './manifest.json', './css/style.css', './js/app.js', './js/semanas.js', './js/notificacoes.js',
-  './assets/icons/icon-192.png', './assets/icons/icon-512.png'
+  './assets/icons/icon-192.png', './assets/icons/icon-512.png', './assets/images/cipa-logo.png', './assets/images/santher-logo.png', './assets/images/5min-timer.png'
 ];
 
 self.addEventListener('install', event => {

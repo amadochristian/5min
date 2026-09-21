@@ -10,6 +10,8 @@ MVP PWA mobile-first para acesso aos formulários semanais de segurança da Sant
 - `js/semanas.js`: ciclo semanal A/B, baseado em segunda-feira 21/09/2026.
 - `js/notificacoes.js`: preferências e permissões da Notifications API.
 - `manifest.json` e `sw.js`: instalação e cache offline.
+- `assets/images/cipa-logo.png`: logo oficial da CIPA usado na tela inicial.
+- `assets/images/santher-logo.png`: logo oficial da Santher usado na identificação principal.
 
 ## Executar
 

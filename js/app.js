@@ -18,10 +18,11 @@ function renderHome() {
   const formLink = FORM_LINKS[state.week.formType];
   app.innerHTML = `
     <section class="page page-home">
-      <div class="welcome-row"><div><p class="eyebrow">SANTHER · SEGURANÇA</p><h1>Olá, vamos cuidar<br>da segurança?</h1></div><div class="secure-badge" aria-hidden="true">✓</div></div>
+      <div class="santher-identity"><img src="assets/images/santher-logo.png" alt="Santher"></div>
+      <div class="welcome-row"><div><p class="eyebrow">SANTHER · SEGURANÇA</p><h1>Olá, vamos cuidar<br>da segurança?</h1></div><div class="cipa-badge"><img src="assets/images/cipa-logo.png" alt="CIPA Segurança do Trabalho"></div></div>
       <div class="week-card">
         <div class="card-topline"><span class="status-dot"></span><span>SEGURANÇA DIÁRIA</span></div>
-        <div class="week-card-content"><div><h2>Fazer 5min diário de segurança</h2><p>Semana de ${formatWeek(state.week)}</p></div><div class="paper-icon" aria-hidden="true"><b></b><i></i><i></i><i></i></div></div>
+        <div class="week-card-content"><div><h2>Fazer 5min diário de segurança</h2><p>Semana de ${formatWeek(state.week)}</p></div><div class="paper-icon"><img src="assets/images/5min-timer.png" alt="Cronômetro de 5 minutos"></div></div>
         <a class="primary-button" href="${formLink}" target="_blank" rel="noopener noreferrer">Fazer 5min diário de segurança <span aria-hidden="true">→</span></a>
       </div>
       <div class="summary-grid">
