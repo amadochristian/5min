@@ -1,0 +1,14 @@
+{
+  "name": "5Minutos para Segurança",
+  "short_name": "5Minutos",
+  "description": "Formulários de segurança operacional da Santher.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#20579e",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
