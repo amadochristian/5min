@@ -51,3 +51,46 @@ a.primary-button { text-decoration: none; }
 .primary-button { color: #17324f; background: #83CC29; box-shadow: 0 8px 18px rgba(131, 204, 41, .24); }
 .primary-button:hover, .primary-button:focus-visible { box-shadow: 0 10px 22px rgba(131, 204, 41, .34); }
 :focus-visible { outline: 3px solid #f1bf3e; outline-offset: 3px; }
+
+.schedule-section { margin: 0 0 18px; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: 0 8px 24px rgba(23,50,79,.04); }
+.schedule-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 18px 12px; }
+.schedule-heading .eyebrow { margin-bottom: 3px; }
+.schedule-heading h2 { margin: 0; color: var(--ink); font-family: 'Space Grotesk'; font-size: 23px; }
+.schedule-heading p:last-child { margin: 3px 0 0; color: var(--muted); font-size: 13px; text-transform: capitalize; }
+.schedule-year { padding: 5px 9px; border-radius: 6px; color: var(--blue-deep); background: #eaf1f8; font-size: 11px; font-weight: 700; }
+.team-picker { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.team-picker > strong { font-size: 13px; }
+.team-options { display: flex; gap: 7px; }
+.team-option { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid #cad6e4; border-radius: 50%; color: var(--ink); background: #fff; font-weight: 700; }
+.team-option.is-selected { border-color: var(--green); color: #fff; background: var(--green); }
+.today-shifts { display: grid; gap: 7px; padding: 14px 18px 8px; }
+.today-shift { display: grid; grid-template-columns: minmax(108px, 1fr) 1fr auto; align-items: center; gap: 8px; min-height: 42px; padding: 7px 10px; border: 1px solid transparent; border-radius: 8px; color: var(--ink); background: #f4f7fb; font-size: 13px; }
+.today-shift > span { color: var(--muted); font-variant-numeric: tabular-nums; }
+.today-shift > strong { font-size: 13px; }
+.today-shift.is-current { border-color: #83cc29; background: #f1f9e6; }
+.today-shift > b { color: #286b32; font-size: 10px; }
+.off-teams { margin: 0 18px; padding: 0 0 14px; color: var(--muted); font-size: 12px; }
+.off-teams strong { color: var(--ink); }
+.team-prompt, .schedule-unavailable { margin: 0; padding: 12px 18px 16px; color: var(--muted); font-size: 13px; }
+.days-carousel { display: grid; grid-auto-columns: 106px; grid-auto-flow: column; gap: 9px; overflow-x: auto; padding: 12px 18px 14px; scroll-snap-type: x mandatory; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+.day-card { display: flex; min-height: 142px; flex-direction: column; align-items: flex-start; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; scroll-snap-align: start; }
+.day-name { color: var(--blue); font-size: 11px; }
+.day-date { margin-top: 1px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.day-team { margin: auto 0 7px; font-size: 12px; }
+.day-status { color: var(--green); font-size: 10px; font-weight: 700; }
+.day-time { margin-top: 3px; color: var(--ink); font-size: 10px; font-variant-numeric: tabular-nums; }
+.day-card:not(.is-working) .day-status { color: var(--muted); }
+.day-card.is-missing { border-style: dashed; background: #f8f9fb; }
+.week-summary { margin: 0 18px 16px; padding: 12px; border-left: 3px solid var(--lime); background: #f7f9f2; }
+.week-summary .eyebrow { margin-bottom: 5px; }
+.week-summary p:not(.eyebrow) { margin: 3px 0; color: var(--muted); font-size: 12px; }
+.week-summary p strong { color: var(--ink); }
+.week-summary small, .schedule-warning { display: block; margin-top: 7px; color: #975c12; font-size: 11px; }
+@media (max-width: 390px) { .today-shift { grid-template-columns: minmax(100px, 1fr) 1fr auto; gap: 5px; padding-inline: 7px; font-size: 12px; }.today-shift > strong { font-size: 12px; }.team-picker { padding-inline: 13px; }.team-options { gap: 5px; }.team-option { width: 34px; height: 34px; } }
+.page-home .santher-identity { margin-bottom: 12px; }
+.week-card { margin-bottom: 14px; padding: 14px 18px; border-radius: 16px; }
+.week-card-content { gap: 12px; padding: 10px 0 12px; }
+.week-card h1 { margin: 0 0 4px; font-family: 'Space Grotesk'; font-size: 20px; line-height: 1.2; letter-spacing: 0; }
+.week-card p { font-size: 12px; }
+.week-card .paper-icon { width: 76px; height: 48px; flex-basis: 76px; }
+.week-card .primary-button { min-height: 46px; padding: 0 14px; border-radius: 10px; font-size: 13px; }
