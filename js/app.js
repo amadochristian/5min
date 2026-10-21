@@ -9,6 +9,7 @@ const FORM_LINKS = {
 
 const TEAMS = ['A', 'B', 'C', 'D', 'E'];
 const SHIFT_LABELS = ['00:00 – 08:00', '08:00 – 16:00', '16:00 – 00:00'];
+const TODAY_SHIFT_DISPLAY_ORDER = [1, 2, 0];
 const state = { route: 'home', week: getWeekInfo(), installPrompt: null, team: loadTeam() };
 const app = document.querySelector('#app');
 
@@ -24,14 +25,18 @@ function renderHome() {
   const todayKey = toScheduleKey(today);
   const todaySchedule = schedule2026[todayKey];
   const currentShift = now.getHours() < 8 ? 0 : now.getHours() < 16 ? 1 : 2;
-  const todayRows = todaySchedule ? todaySchedule.shifts.map((team, index) => `<div class="today-shift ${now.getFullYear() === 2026 && index === currentShift ? 'is-current' : ''}"><span>${SHIFT_LABELS[index]}</span><strong>Turma ${team}</strong>${now.getFullYear() === 2026 && index === currentShift ? '<b>AGORA</b>' : ''}</div>`).join('') : '<p class="schedule-unavailable">Escala não cadastrada para esta data.</p>';
+  const todayRows = todaySchedule ? TODAY_SHIFT_DISPLAY_ORDER.map(index => {
+    const team = todaySchedule.shifts[index];
+    const isCurrent = now.getFullYear() === 2026 && index === currentShift;
+    return `<div class="today-shift ${isCurrent ? 'is-current' : ''}"><span>${SHIFT_LABELS[index]}</span><strong>Turma ${team}</strong>${isCurrent ? '<b>AGORA</b>' : ''}</div>`;
+  }).join('') : '<p class="schedule-unavailable">Escala não cadastrada para esta data.</p>';
   const dayHeading = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(today);
   const days = getUpcomingDays(today);
   const userDays = state.team ? days.map(date => ({ date, schedule: schedule2026[toScheduleKey(date)] })).filter(item => item.schedule) : [];
   const workDays = userDays.filter(item => item.schedule.shifts.includes(state.team)).map(item => shortWeekday(item.date));
   const restDays = userDays.filter(item => item.schedule.off.includes(state.team)).map(item => shortWeekday(item.date));
   const unknownDays = days.filter(date => !schedule2026[toScheduleKey(date)]);
-  const nextDays = state.team ? `<div class="days-carousel" aria-label="Escala dos próximos sete dias">${days.map(date => renderDayCard(date, state.team)).join('')}</div><div class="week-summary"><p class="eyebrow">SUA SEMANA</p><p><strong>Você trabalha:</strong> ${workDays.length ? workDays.join(' • ') : '—'}</p><p><strong>Você está de folga:</strong> ${restDays.length ? restDays.join(' • ') : '—'}</p>${unknownDays.length ? `<small>Sem dados para: ${unknownDays.map(formatShortDate).join(', ')}.</small>` : ''}</div>` : '<p class="team-prompt">Selecione sua turma para consultar sua escala.</p>';
+  const nextDays = state.team ? `<div class="days-carousel" aria-label="Escala dos próximos 15 dias">${days.map(date => renderDayCard(date, state.team)).join('')}</div><div class="week-summary"><p class="eyebrow">PRÓXIMOS 15 DIAS</p><p><strong>Você trabalha:</strong> ${workDays.length ? workDays.join(' • ') : '—'}</p><p><strong>Você está de folga:</strong> ${restDays.length ? restDays.join(' • ') : '—'}</p>${unknownDays.length ? `<small>Sem dados para: ${unknownDays.map(formatShortDate).join(', ')}.</small>` : ''}</div>` : '<p class="team-prompt">Selecione sua turma para consultar sua escala.</p>';
   app.innerHTML = `
     <section class="page page-home">
       <div class="santher-identity"><img src="assets/images/santher-logo.png" alt="Santher"></div>
@@ -76,7 +81,7 @@ function toScheduleKey(date) {
 }
 
 function getUpcomingDays(start) {
-  return Array.from({ length: 7 }, (_, index) => {
+  return Array.from({ length: 15 }, (_, index) => {
     const date = new Date(start);
     date.setDate(start.getDate() + index);
     return date;
@@ -109,11 +114,11 @@ function capitalize(value) {
 
 function renderSettings() {
   const settings = getSettings();
-  app.innerHTML = `<section class="page"><div class="page-heading"><p class="eyebrow">PREFERÊNCIAS</p><h1>Ajustes</h1><p>Configure o aplicativo para sua rotina.</p></div><div class="settings-panel"><div class="setting-heading"><div class="setting-icon">♧</div><div><h2>Lembretes</h2><p>Receba um lembrete semanal neste dispositivo.</p></div><label class="switch"><input id="reminders" type="checkbox" ${settings.reminders ? 'checked' : ''}><span></span></label></div><div class="reminder-options ${settings.reminders ? '' : 'is-disabled'}"><div class="field"><label for="reminderDay">Dia</label><select id="reminderDay" ${settings.reminders ? '' : 'disabled'}><option value="monday" ${settings.day === 'monday' ? 'selected' : ''}>Segunda-feira</option><option value="friday" ${settings.day === 'friday' ? 'selected' : ''}>Sexta-feira</option></select></div><div class="field"><label for="reminderTime">Horário</label><input id="reminderTime" type="time" value="${settings.time}" ${settings.reminders ? '' : 'disabled'}></div></div><button class="secondary-button" id="notificationPermission" type="button">Verificar notificações</button><p class="support-note" id="notificationMessage">${getNotificationMessage(notificationsSupported() ? Notification.permission : 'unsupported')}</p></div><div class="settings-panel about-panel"><div><span class="eyebrow">SOBRE O APP</span><h2>5Minutos para Segurança</h2><p>Santher · Bragança Paulista/SP</p></div><span class="version-tag">MVP</span></div></section>`;
+  app.innerHTML = `<section class="page"><div class="page-heading"><p class="eyebrow">PREFERÊNCIAS</p><h1>Ajustes</h1><p>Configure o aplicativo para sua rotina.</p></div><div class="settings-panel"><div class="setting-heading"><div class="setting-icon">♧</div><div><h2>Lembretes</h2><p>Receba um lembrete semanal neste dispositivo.</p></div><label class="switch"><input id="reminders" type="checkbox" ${settings.reminders ? 'checked' : ''}><span></span></label></div><div class="reminder-options ${settings.reminders ? '' : 'is-disabled'}"><div class="field"><label for="reminderTime">Horário</label><input id="reminderTime" type="time" value="${settings.time}" ${settings.reminders ? '' : 'disabled'}></div></div><button class="secondary-button" id="notificationPermission" type="button">Verificar notificações</button><p class="support-note" id="notificationMessage">${getNotificationMessage(notificationsSupported() ? Notification.permission : 'unsupported')}</p></div><div class="settings-panel about-panel"><div><span class="eyebrow">SOBRE O APP</span><h2>5Minutos para Segurança</h2><p>Santher · Bragança Paulista/SP</p></div><span class="version-tag">MVP</span></div></section>`;
   const toggle = document.querySelector('#reminders');
-  const updateSettings = () => { const current = { reminders: toggle.checked, day: document.querySelector('#reminderDay').value, time: document.querySelector('#reminderTime').value }; saveSettings(current); document.querySelector('.reminder-options').classList.toggle('is-disabled', !current.reminders); document.querySelector('#reminderDay').disabled = !current.reminders; document.querySelector('#reminderTime').disabled = !current.reminders; };
+  const updateSettings = () => { const current = { ...settings, reminders: toggle.checked, time: document.querySelector('#reminderTime').value }; saveSettings(current); document.querySelector('.reminder-options').classList.toggle('is-disabled', !current.reminders); document.querySelector('#reminderTime').disabled = !current.reminders; };
   toggle.addEventListener('change', async () => { if (toggle.checked && (!notificationsSupported() || Notification.permission !== 'granted')) { const permission = await requestNotificationPermission(); if (permission !== 'granted') { toggle.checked = false; document.querySelector('#notificationMessage').textContent = getNotificationMessage(permission); } } updateSettings(); });
-  document.querySelectorAll('#reminderDay, #reminderTime').forEach(input => input.addEventListener('change', updateSettings));
+  document.querySelector('#reminderTime').addEventListener('change', updateSettings);
   document.querySelector('#notificationPermission').addEventListener('click', async () => { const permission = await requestNotificationPermission(); document.querySelector('#notificationMessage').textContent = permission === 'granted' ? 'Notificações permitidas neste dispositivo.' : getNotificationMessage(permission); });
 }
 

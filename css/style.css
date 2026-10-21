@@ -94,3 +94,4 @@ a.primary-button { text-decoration: none; }
 .week-card p { font-size: 12px; }
 .week-card .paper-icon { width: 76px; height: 48px; flex-basis: 76px; }
 .week-card .primary-button { min-height: 46px; padding: 0 14px; border-radius: 10px; font-size: 13px; }
+.reminder-options > .field { grid-column: 1 / -1; }
