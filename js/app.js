@@ -114,12 +114,35 @@ function capitalize(value) {
 
 function renderSettings() {
   const settings = getSettings();
-  app.innerHTML = `<section class="page"><div class="page-heading"><p class="eyebrow">PREFERÊNCIAS</p><h1>Ajustes</h1><p>Configure o aplicativo para sua rotina.</p></div><div class="settings-panel"><div class="setting-heading"><div class="setting-icon">♧</div><div><h2>Lembretes</h2><p>Receba um lembrete semanal neste dispositivo.</p></div><label class="switch"><input id="reminders" type="checkbox" ${settings.reminders ? 'checked' : ''}><span></span></label></div><div class="reminder-options ${settings.reminders ? '' : 'is-disabled'}"><div class="field"><label for="reminderTime">Horário</label><input id="reminderTime" type="time" value="${settings.time}" ${settings.reminders ? '' : 'disabled'}></div></div><button class="secondary-button" id="notificationPermission" type="button">Verificar notificações</button><p class="support-note" id="notificationMessage">${getNotificationMessage(notificationsSupported() ? Notification.permission : 'unsupported')}</p></div><div class="settings-panel about-panel"><div><span class="eyebrow">SOBRE O APP</span><h2>5Minutos para Segurança</h2><p>Santher · Bragança Paulista/SP</p></div><span class="version-tag">MVP</span></div></section>`;
+  app.innerHTML = `<section class="page"><div class="page-heading"><p class="eyebrow">PREFERÊNCIAS</p><h1>Ajustes</h1><p>Configure o aplicativo para sua rotina.</p></div><div class="settings-panel"><div class="setting-heading"><div class="setting-icon">♧</div><div><h2>Lembretes</h2><p>Receba um lembrete semanal neste dispositivo.</p></div><label class="switch"><input id="reminders" type="checkbox" ${settings.reminders ? 'checked' : ''}><span></span></label></div><div class="reminder-options ${settings.reminders ? '' : 'is-disabled'}"><div class="field"><label for="reminderTime">Horário</label><input id="reminderTime" type="time" value="${settings.time}" ${settings.reminders ? '' : 'disabled'}></div></div><button class="secondary-button" id="notificationPermission" type="button">Verificar notificações</button><p class="support-note" id="notificationMessage">${getNotificationMessage(notificationsSupported() ? Notification.permission : 'unsupported')}</p></div><div class="settings-panel"><div class="setting-heading"><div><h2>Atualização do aplicativo</h2><p>Verifique se há uma versão mais recente e atualize o app.</p></div></div><button class="secondary-button" id="appUpdateButton" type="button">Atualizar para a versão mais recente</button><p class="support-note" id="appUpdateMessage" role="status" aria-live="polite"></p></div><div class="settings-panel about-panel"><div><span class="eyebrow">SOBRE O APP</span><h2>5Minutos para Segurança</h2><p>Santher · Bragança Paulista/SP</p></div><span class="version-tag">MVP</span></div></section>`;
   const toggle = document.querySelector('#reminders');
   const updateSettings = () => { const current = { ...settings, reminders: toggle.checked, time: document.querySelector('#reminderTime').value }; saveSettings(current); document.querySelector('.reminder-options').classList.toggle('is-disabled', !current.reminders); document.querySelector('#reminderTime').disabled = !current.reminders; };
   toggle.addEventListener('change', async () => { if (toggle.checked && (!notificationsSupported() || Notification.permission !== 'granted')) { const permission = await requestNotificationPermission(); if (permission !== 'granted') { toggle.checked = false; document.querySelector('#notificationMessage').textContent = getNotificationMessage(permission); } } updateSettings(); });
   document.querySelector('#reminderTime').addEventListener('change', updateSettings);
   document.querySelector('#notificationPermission').addEventListener('click', async () => { const permission = await requestNotificationPermission(); document.querySelector('#notificationMessage').textContent = permission === 'granted' ? 'Notificações permitidas neste dispositivo.' : getNotificationMessage(permission); });
+  document.querySelector('#appUpdateButton').addEventListener('click', async event => {
+    const button = event.currentTarget;
+    const message = document.querySelector('#appUpdateMessage');
+    if (!navigator.onLine) {
+      message.textContent = 'Conecte-se à internet para verificar atualizações.';
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'Verificando atualização…';
+    message.textContent = '';
+    try {
+      const registration = 'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : null;
+      if (registration) await registration.update();
+      message.textContent = 'Atualizando o aplicativo…';
+      window.location.reload();
+    } catch (error) {
+      console.error('Falha ao atualizar o aplicativo:', error);
+      button.disabled = false;
+      button.textContent = 'Tentar atualizar novamente';
+      message.textContent = 'Não foi possível verificar a atualização. Confira sua conexão e tente novamente.';
+    }
+  });
 }
 
 function showToast(message) { const toast = document.querySelector('#toast'); toast.textContent = message; toast.classList.add('is-visible'); setTimeout(() => toast.classList.remove('is-visible'), 3200); }
@@ -135,4 +158,21 @@ window.addEventListener('beforeinstallprompt', event => { event.preventDefault()
 document.querySelector('#installButton').addEventListener('click', async () => { if (!state.installPrompt) return; state.installPrompt.prompt(); await state.installPrompt.userChoice; state.installPrompt = null; document.querySelector('#installButton').hidden = true; });
 window.addEventListener('appinstalled', () => { document.querySelector('#installButton').hidden = true; showToast('Aplicativo instalado com sucesso.'); });
 
-(function init() { updateConnection(); render(); window.setInterval(() => { if (state.route === 'home') renderHome(); }, 60_000); if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(error => console.error('Service Worker:', error)); })();
+(function init() {
+  updateConnection();
+  render();
+  window.setInterval(() => { if (state.route === 'home') renderHome(); }, 60_000);
+  if ('serviceWorker' in navigator) {
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    let reloadedForUpdate = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (hadController && !reloadedForUpdate) {
+        reloadedForUpdate = true;
+        window.location.reload();
+      }
+    });
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+      .then(registration => registration.update())
+      .catch(error => console.error('Service Worker:', error));
+  }
+})();
