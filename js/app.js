@@ -24,11 +24,14 @@ function renderHome() {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
   const todayKey = toScheduleKey(today);
   const todaySchedule = schedule2026[todayKey];
+  const nextDay = new Date(today);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const nextDaySchedule = schedule2026[toScheduleKey(nextDay)];
   const currentShift = now.getHours() < 8 ? 0 : now.getHours() < 16 ? 1 : 2;
   const todayRows = todaySchedule ? TODAY_SHIFT_DISPLAY_ORDER.map(index => {
-    const team = todaySchedule.shifts[index];
-    const isCurrent = now.getFullYear() === 2026 && index === currentShift;
-    return `<div class="today-shift ${isCurrent ? 'is-current' : ''}"><span>${SHIFT_LABELS[index]}</span><strong>Turma ${team}</strong>${isCurrent ? '<b>AGORA</b>' : ''}</div>`;
+    const team = index === 0 ? nextDaySchedule?.shifts[index] : todaySchedule.shifts[index];
+    const isCurrent = Boolean(team) && now.getFullYear() === 2026 && index === currentShift;
+    return `<div class="today-shift ${isCurrent ? 'is-current' : ''}"><span>${SHIFT_LABELS[index]}</span><strong>${team ? `Turma ${team}` : 'Escala não cadastrada'}</strong>${isCurrent ? '<b>AGORA</b>' : ''}</div>`;
   }).join('') : '<p class="schedule-unavailable">Escala não cadastrada para esta data.</p>';
   const dayHeading = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(today);
   const days = getUpcomingDays(today);
